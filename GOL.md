@@ -1,63 +1,56 @@
-# Web3 Game of Life NFT
+### 项目名称
+GAME OF LIFE
 
-## 简介
+### 团队信息
+- **Adam:** 邮箱: new4u@139.com
+- **William:** 邮箱: W.tsai.official@gmail.com
+- **Alfred:** 邮箱:fuhaojava@foxmail.com
+- **Karl4chill:** 邮箱:limlamleen@gmail.com
 
-本项目是一个基于Web3的康威生命游戏（Conway's Game of Life）实现。用户可以在网页上进行生命游戏，并将当前的游戏棋盘状态铸造为一个NFT（非同质化代币）。这些NFT存储在 Monad 测试网上，用户也可以加载已有的NFT来恢复游戏状态，或查看所有已铸造的NFT列表。
+### 项目描述
+GitHub仓库: [https://github.com/new4u/GOL.git](https://github.com/new4u/GOL.git)
 
-## 主要功能
+本项目是一个基于Web3的康威生命游戏（Conway's Game of Life）实现，旨在探索NFT与游戏结合的多种可能性。
 
-*   **交互式生命游戏棋盘**：创建、编辑和模拟生命游戏图案。
+**核心概念与愿景:**
+1.  **Pro版本功能NFT化**：通过持有特定NFT来解锁游戏的高级功能或特殊模式。
+2.  **订阅即资产**：探索将用户的订阅行为（如果未来引入）转化为一种可交易的数字资产。
+3.  **社区共享与治理**：NFT持有者未来可能参与到项目的治理决策和潜在的收益分享中。
+
+**当前已实现主要功能:**
+*   **交互式生命游戏棋盘**：用户可以在网页上创建、编辑和模拟生命游戏的图案。
 *   **钱包连接**：通过浏览器钱包（如MetaMask）连接到Monad测试网。
-*   **铸造NFT**：将当前的游戏棋盘状态铸造为一个新的NFT。
-*   **加载NFT**：通过输入Token ID，从区块链加载并显示对应的游戏状态。
-*   **列出所有NFT**：显示一个包含所有已铸造NFT信息的表格（Token ID, 所有者, 游戏代数, 时间戳, 棋盘状态）。
+*   **铸造NFT**：用户可以将当前的游戏棋盘状态铸造为一个新的NFT，永久保存在区块链上。
+*   **加载NFT**：通过输入Token ID，从区块链加载并恢复对应的游戏棋盘状态。
+*   **列出所有NFT**：展示一个包含所有已铸造的游戏NFT信息的表格（Token ID, 所有者, 游戏代数, 时间戳, 棋盘状态）。
+*   **自动演化**：
+    *   提供“随机开始自动演化”和“从当前状态开始自动演化”的功能。
+    *   用户可以随时“停止自动演化”。
+    *   实时显示当前演化代数和累计用时。
+*   **"Moword"输入框**：提供一个文本输入区域，为未来功能扩展预留接口。
 
-## 技术栈
+### 可用的在线演示链接
+链接: <请在此处填写可公开访问的前端页面链接，例如通过GitHub Pages, Netlify, Vercel等部署的index.html>
 
-*   **前端**：HTML, CSS, JavaScript
-*   **Web3库**：ethers.js (v6)
-*   **智能合约**：Solidity
-*   **区块链网络**：Monad 测试网 (Chain ID: 10143)
+### 所有部署在Monad Testnet的合约地址
+- **GameOfLifeDemo**: `0x680c88f57717010661710C5849a47A13694F83A0` (用途: 核心游戏逻辑，NFT铸造、游戏状态存储与检索)
 
-## 项目结构
+### (可选) PPT
+链接/说明:
 
-```
-GOL/
-├── README.md              # 本项目说明文档
-├── frontend/
-│   └── index.html         # 游戏主界面、Web3交互逻辑
-├── contracts/
-│   └── GameOfLifeDemo.sol # (或类似名称) 智能合约，处理NFT铸造和游戏状态存储
-├── demo.md                # 包含合约部署地址等演示信息
-└── .env                   # 环境变量文件 (例如部署合约时使用的私钥)
-```
-
-## 运行指南
-
-1.  **克隆仓库** (如果尚未克隆):
-    ```bash
-    git clone <repository-url>
-    cd GOL
-    ```
-2.  **打开前端页面**:
-    直接在现代浏览器中打开 `frontend/index.html` 文件。
-3.  **配置钱包**:
-    *   确保你的浏览器安装了MetaMask或兼容的Web3钱包。
-    *   将钱包网络切换到 **Monad Testnet**。
-        *   Network Name: Monad Testnet
-        *   New RPC URL: `https://testnet-rpc.monad.xyz/` (请根据 `demo.md` 或最新信息确认RPC URL)
-        *   Chain ID: `10143`
-        *   Currency Symbol: MON
-    *   确保钱包中有足够的 MON 测试币用于支付交易的gas费用。
-
-## 智能合约信息
-
-*   **合约地址 (Monad Testnet)**: `0x680c88f57717010661710C5849a47A13694F83A0` (具体地址请参考 `demo.md` 文件)
-*   **主要交互函数**:
-    *   `mintGame(string memory initialState)`: 铸造新的游戏NFT。
-    *   `getGameState(uint256 tokenId)`: 获取指定NFT的游戏状态。
-    *   `ownerOf(uint256 tokenId)`: 获取NFT的所有者 (用于列出NFT功能)。
+### (可选) 视频
+链接:
 
 ---
 
-这个README旨在提供项目的概览和基本操作指南。
+### 请确认以下事项：
+
+- [ ] 所有合约内容都已部署在 Monad Testnet 上
+- [ ] 我已将最终版本的代码合并到此 PR 的分支中，准备合入当前仓库
+- [ ] 我确认代码将按照 `/root/yourproject` 的路径结构进行合并 (如果适用，请根据实际情况修改路径)
+- [ ] **重要：**在线演示链接可用并且已经过充分测试
+
+---
+
+### 其他说明 (可选)
+该项目旨在探索Web3与经典游戏的结合，通过NFT赋予游戏状态独特性和持久性，并尝试引入社区化和资产化的概念。
