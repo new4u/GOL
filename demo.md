@@ -40,15 +40,7 @@
    npm install
    ```
 
-3. 运行命令
-
-   ```bash
-   # 启动本地服务器
-   cd frontend
-   python3 -m http.server 8000
-   ```
-
-4. 合约部署（可选）
+3. 合约部署（可选）
 
    ```bash
    # 配置.env
