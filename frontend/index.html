@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game of Life NFT Demo</title>
+    <title>Web3 Game of Life NFT - 自动演化版</title>
     <script type="importmap">
     {
         "imports": {
@@ -55,7 +55,7 @@
     </style>
 </head>
 <body>
-    <h1>Game of Life NFT Demo</h1>
+    <h1>Web3 Game of Life NFT - 自动演化版</h1>
     
     <div id="wallet-status">
         钱包状态
@@ -70,12 +70,26 @@
     </div>
 
     <div class="section">
+        <h2>自动演化控制</h2>
+        <button id="startRandomAutoEvolveBtn" onclick="startRandomAutoEvolution()">随机开始自动演化</button>
+        <button id="startCurrentAutoEvolveBtn" onclick="startCurrentStateAutoEvolution()">从当前状态开始自动演化</button>
+        <button id="stopAutoEvolveBtn" onclick="stopAutoEvolution(true)" disabled>停止自动演化</button>
+        <p>演化用时: <span id="evolutionTimeDisplay">N/A</span></p>
+        <div>
+            <label for="mowordInput">Moword: </label>
+            <input type="text" id="mowordInput" placeholder="请输入文字...">
+        </div>
+    </div>
+
+    <div class="section">
         <h2>所有已铸造的NFT列表</h2>
         <button onclick="listAllNFTs()">列出所有NFT</button>
         <div id="nftListTable" style="margin-top: 10px; max-height: 400px; overflow-y: auto;"></div>
     </div>
 
     <div id="game-container">
+        <div id="status">状态信息会显示在这里</div>
+        <p>当前代数: <span id="generationDisplay">0</span></p>
         <div class="game-board" id="board"></div>
         
         <div>
@@ -89,9 +103,12 @@
 
     <script>
         let boardState = Array(10).fill().map(() => Array(10).fill(false));
-        let signer; // Changed from wallet
-        let provider;
-        let contract;
+        let generationCount = 0;
+        let provider, signer, contract;
+        let isAutoEvolving = false;
+        let autoEvolutionTimer = null;
+        let evolutionStartTime = 0;
+        let lastBoardStateForStabilityCheck = '';
         
         // 初始化页面
         function initBoard() {
@@ -106,6 +123,8 @@
                 }
             }
             updateBoard();
+            generationCount = 0;
+            document.getElementById('generationDisplay').innerText = generationCount;
         }
 
         // 切换细胞状态
@@ -130,6 +149,8 @@
             boardState = boardState.map(row => 
                 row.map(() => Math.random() > 0.7)
             );
+            generationCount = 0;
+            document.getElementById('generationDisplay').innerText = generationCount;
             updateBoard();
         }
 
@@ -147,6 +168,8 @@
                 }
             }
             boardState = newState;
+            generationCount++;
+            document.getElementById('generationDisplay').innerText = generationCount;
             updateBoard();
         }
 
@@ -354,6 +377,125 @@
                 document.getElementById('status').innerText = '列出NFT时出错: ' + error.message;
                 nftListTableDiv.innerHTML = '加载NFT列表失败。';
             }
+        }
+
+        // 自动演化功能
+        async function startRandomAutoEvolution() {
+            if (isAutoEvolving) return;
+            isAutoEvolving = true;
+            document.getElementById('startRandomAutoEvolveBtn').disabled = true;
+            document.getElementById('startCurrentAutoEvolveBtn').disabled = true;
+            document.getElementById('stopAutoEvolveBtn').disabled = false;
+            console.log('startRandomAutoEvolution: Called');
+            document.getElementById('status').innerText = '正在准备自动演化...';
+            document.getElementById('evolutionTimeDisplay').innerText = '计算中...';
+
+            randomize(); // 从随机状态开始
+            updateBoard();
+            generationCount = 0; // 重置代数
+            document.getElementById('generationDisplay').innerText = generationCount; // 更正ID
+            evolutionStartTime = performance.now();
+            lastBoardStateForStabilityCheck = JSON.stringify(boardState);
+            console.log('startRandomAutoEvolution: Initial board state for stability check:', lastBoardStateForStabilityCheck);
+
+            document.getElementById('status').innerText = '自动演化中... (第 ' + generationCount + ' 代)';
+            console.log('startRandomAutoEvolution: Calling evolutionStepLoop for the first time.');
+            evolutionStepLoop();
+        }
+
+        async function startCurrentStateAutoEvolution() {
+            console.log('startCurrentStateAutoEvolution: Called');
+            if (isAutoEvolving) return;
+            isAutoEvolving = true;
+            document.getElementById('startRandomAutoEvolveBtn').disabled = true;
+            document.getElementById('startCurrentAutoEvolveBtn').disabled = true;
+            document.getElementById('stopAutoEvolveBtn').disabled = false;
+            document.getElementById('status').innerText = '正在准备从当前状态自动演化...';
+            document.getElementById('evolutionTimeDisplay').innerText = '计算中...';
+
+            // 不调用 randomize()，直接使用当前 boardState
+            updateBoard(); // 确保显示的是当前状态
+            generationCount = 0; // 重置代数
+            document.getElementById('generationDisplay').innerText = generationCount; // 更正ID
+            evolutionStartTime = performance.now();
+            lastBoardStateForStabilityCheck = JSON.stringify(boardState);
+
+            document.getElementById('status').innerText = '自动演化中 (从当前状态)... (第 ' + generationCount + ' 代)';
+            evolutionStepLoop();
+        }
+
+        function evolutionStepLoop() {
+            console.log('evolutionStepLoop: Entered. isAutoEvolving:', isAutoEvolving, 'Generation:', generationCount);
+            if (!isAutoEvolving) {
+                console.log('evolutionStepLoop: Exiting because isAutoEvolving is false.');
+                return;
+            }
+
+            console.log('evolutionStepLoop: About to call step()');
+            step(); // 计算下一代
+            console.log('evolutionStepLoop: step() finished. About to call updateBoard()');
+            updateBoard(); // 更新显示
+            console.log('evolutionStepLoop: updateBoard() finished.');
+
+            const currentBoardState = JSON.stringify(boardState);
+            const isEmpty = boardState.every(row => row.every(cell => !cell));
+            const isStable = currentBoardState === lastBoardStateForStabilityCheck;
+            console.log('evolutionStepLoop: isEmpty:', isEmpty, 'isStable:', isStable, 'Current state:', currentBoardState);
+            
+            lastBoardStateForStabilityCheck = currentBoardState;
+
+            document.getElementById('status').innerText = '自动演化中... (第 ' + generationCount + ' 代)';
+
+            if (isEmpty || isStable) {
+                let reason = isEmpty ? '棋盘为空' : '达到稳定状态';
+                console.log('evolutionStepLoop: Game ended. Reason:', reason);
+                stopAutoEvolution(false, reason);
+            } else {
+                // 再次检查，确保在安排下一次调用前仍然处于自动演化状态
+                if (isAutoEvolving) {
+                    console.log('evolutionStepLoop: Scheduling next step.');
+                    autoEvolutionTimer = setTimeout(evolutionStepLoop, 100); // 100ms 延迟，可调整
+                } else {
+                    console.log('evolutionStepLoop: Not scheduling next step because isAutoEvolving is false.');
+                }
+            }
+        }
+
+        function stopAutoEvolution(manualStop = false, reason = '手动停止') {
+            const wasEvolvingWhenCalled = isAutoEvolving; // 捕获调用此函数时是否正在演化
+            
+            isAutoEvolving = false; // 关键：设置标志以停止循环
+            clearTimeout(autoEvolutionTimer); // 清除任何挂起的setTimeout
+
+            const endTime = performance.now();
+            let durationSecondsDisplay = "N/A";
+            let finalGenerationCount = generationCount;
+
+            if (evolutionStartTime > 0) { // 如果演化实际已开始
+                const durationMs = endTime - evolutionStartTime;
+                durationSecondsDisplay = (durationMs / 1000).toFixed(2) + " 秒";
+            } else { // 演化未开始或已被重置
+                finalGenerationCount = 0; // 如果未开始，则代数为0
+            }
+
+            document.getElementById('evolutionTimeDisplay').innerText = durationSecondsDisplay;
+
+            if (manualStop) {
+                if (evolutionStartTime === 0) { // 在真正开始前点击了停止
+                    document.getElementById('status').innerText = '自动演化已停止 (未开始)。';
+                } else {
+                    document.getElementById('status').innerText = `自动演化已手动停止。共 ${finalGenerationCount} 代，用时 ${durationSecondsDisplay}。`;
+                }
+            } else { // 自然停止
+                // 即使是自然停止，也可能是在被告知手动停止的同一事件循环中发生的
+                // 主要依赖 reason 来区分
+                document.getElementById('status').innerText = `自动演化结束: ${reason}。共 ${finalGenerationCount} 代，用时 ${durationSecondsDisplay}。`;
+            }
+            
+            document.getElementById('startRandomAutoEvolveBtn').disabled = false;
+            document.getElementById('startCurrentAutoEvolveBtn').disabled = false;
+            document.getElementById('stopAutoEvolveBtn').disabled = true;
+            // evolutionStartTime 在 startAutoEvolution 中重置，确保每次开始都是新的计时
         }
 
         function escapeHtml(unsafe) {
