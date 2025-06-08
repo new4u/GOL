@@ -1,76 +1,63 @@
-# Cascade AI Web3 Growth Journey
+# Web3 Game of Life NFT
 
-## 团队信息
-- 团队名称：Cascade
-- 团队成员：
-  - ac
+## 简介
 
-## 项目介绍
-Game of Life Pro NFT - 将经典生命游戏的高级功能转化为链上数字资产
+本项目是一个基于Web3的康威生命游戏（Conway's Game of Life）实现。用户可以在网页上进行生命游戏，并将当前的游戏棋盘状态铸造为一个NFT（非同质化代币）。这些NFT存储在 Monad 测试网上，用户也可以加载已有的NFT来恢复游戏状态，或查看所有已铸造的NFT列表。
 
-### 核心创新
-1. Pro版本功能NFT化：通过持有NFT解锁高级功能
-2. 订阅即资产：每月订阅费用转化为可交易的数字资产
-3. 社区共享：NFT持有者可参与治理和收益分配
+## 主要功能
 
-## 技术实现
-### 智能合约
-- **SubscriptionNFT.sol**：订阅权限管理
-  - NFT铸造与销毁
-  - 订阅状态追踪
-  - 权限验证
+*   **交互式生命游戏棋盘**：创建、编辑和模拟生命游戏图案。
+*   **钱包连接**：通过浏览器钱包（如MetaMask）连接到Monad测试网。
+*   **铸造NFT**：将当前的游戏棋盘状态铸造为一个新的NFT。
+*   **加载NFT**：通过输入Token ID，从区块链加载并显示对应的游戏状态。
+*   **列出所有NFT**：显示一个包含所有已铸造NFT信息的表格（Token ID, 所有者, 游戏代数, 时间戳, 棋盘状态）。
 
-- **ProFeatures.sol**：功能管理
-  - 自定义规则存储
-  - 游戏状态保存
-  - 统计数据分析
+## 技术栈
 
-- **Revenue.sol**：收益分配
-  - 订阅费用分配
-  - 社区治理
-  - 二级市场版税
-
-### 前端实现
-- Web3钱包集成
-- NFT展示界面
-- 功能解锁状态管理
-- 订阅管理面板
-
-## 项目亮点
-1. **订阅即挖矿**：每月29.9元订阅费转化为平台代币，可用于：
-   - 购买/升级NFT
-   - 参与社区治理
-   - 二级市场交易
-
-2. **分层NFT系统**
-   ```
-   订阅等级
-   ├── Basic NFT (1个月)
-   │   └── 基础Pro功能
-   ├── Silver NFT (3个月)
-   │   ├── 全部Pro功能
-   │   └── 优先支持
-   └── Gold NFT (12个月)
-       ├── 全部功能
-       ├── 社区治理权
-       └── 收益分成
-   ```
-
-3. **AI赋能**
-   - 自动优化规则推荐
-   - 个性化统计分析
-   - 社区趋势预测
+*   **前端**：HTML, CSS, JavaScript
+*   **Web3库**：ethers.js (v6)
+*   **智能合约**：Solidity
+*   **区块链网络**：Monad 测试网 (Chain ID: 10143)
 
 ## 项目结构
+
 ```
-projects/2025-03/cascade/
-├── README.md          # 项目说明文档
-├── contracts/         # 智能合约代码
-│   ├── SubscriptionNFT.sol
-│   ├── ProFeatures.sol
-│   └── Revenue.sol
-├── frontend/         # 前端代码
-│   ├── NFTGallery/
-│   └── SubscriptionUI/
-├── demo.md           # 演示文档
-└── prompts.md        # AI交互记录
+GOL/
+├── README.md              # 本项目说明文档
+├── frontend/
+│   └── index.html         # 游戏主界面、Web3交互逻辑
+├── contracts/
+│   └── GameOfLifeDemo.sol # (或类似名称) 智能合约，处理NFT铸造和游戏状态存储
+├── demo.md                # 包含合约部署地址等演示信息
+└── .env                   # 环境变量文件 (例如部署合约时使用的私钥)
+```
+
+## 运行指南
+
+1.  **克隆仓库** (如果尚未克隆):
+    ```bash
+    git clone <repository-url>
+    cd GOL
+    ```
+2.  **打开前端页面**:
+    直接在现代浏览器中打开 `frontend/index.html` 文件。
+3.  **配置钱包**:
+    *   确保你的浏览器安装了MetaMask或兼容的Web3钱包。
+    *   将钱包网络切换到 **Monad Testnet**。
+        *   Network Name: Monad Testnet
+        *   New RPC URL: `https://testnet-rpc.monad.xyz/` (请根据 `demo.md` 或最新信息确认RPC URL)
+        *   Chain ID: `10143`
+        *   Currency Symbol: MON
+    *   确保钱包中有足够的 MON 测试币用于支付交易的gas费用。
+
+## 智能合约信息
+
+*   **合约地址 (Monad Testnet)**: `0x680c88f57717010661710C5849a47A13694F83A0` (具体地址请参考 `demo.md` 文件)
+*   **主要交互函数**:
+    *   `mintGame(string memory initialState)`: 铸造新的游戏NFT。
+    *   `getGameState(uint256 tokenId)`: 获取指定NFT的游戏状态。
+    *   `ownerOf(uint256 tokenId)`: 获取NFT的所有者 (用于列出NFT功能)。
+
+---
+
+这个README旨在提供项目的概览和基本操作指南。
